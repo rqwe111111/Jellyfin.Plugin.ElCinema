@@ -1,0 +1,27 @@
+<div id="ElCinemaConfigPage" data-role="page" class="page type-interior pluginConfigurationPage" data-require="emby-input,emby-button,emby-checkbox">
+<div data-role="content"><div class="content-primary"><form id="ElCinemaConfigForm">
+<h2>elCinema Metadata Full</h2><p>مزود بيانات عربي لـ Jellyfin 12.1. استخدم الطلبات بمعدل منخفض واحترم شروط elCinema. للاستخدام التجاري استخدم خدمة بيانات مرخّصة.</p>
+<h3>المصادر</h3>
+<label class="emby-checkbox-label"><input id="EnableProvider" type="checkbox" is="emby-checkbox"/><span>تفعيل الإضافة</span></label>
+<label class="emby-checkbox-label"><input id="EnableMovieMetadata" type="checkbox" is="emby-checkbox"/><span>الأفلام</span></label>
+<label class="emby-checkbox-label"><input id="EnableSeriesMetadata" type="checkbox" is="emby-checkbox"/><span>المسلسلات</span></label>
+<label class="emby-checkbox-label"><input id="EnableSeasonMetadata" type="checkbox" is="emby-checkbox"/><span>المواسم / الأجزاء</span></label>
+<label class="emby-checkbox-label"><input id="EnableEpisodeMetadata" type="checkbox" is="emby-checkbox"/><span>الحلقات</span></label>
+<label class="emby-checkbox-label"><input id="EnablePeopleMetadata" type="checkbox" is="emby-checkbox"/><span>الممثلون وطاقم العمل</span></label>
+<label class="emby-checkbox-label"><input id="EnableImages" type="checkbox" is="emby-checkbox"/><span>الصور</span></label>
+<label class="emby-checkbox-label"><input id="EnableGalleryImages" type="checkbox" is="emby-checkbox"/><span>معرض الصور (طلبات إضافية)</span></label>
+<label class="emby-checkbox-label"><input id="EnableCast" type="checkbox" is="emby-checkbox"/><span>جلب الممثلين</span></label>
+<label class="emby-checkbox-label"><input id="EnableCrew" type="checkbox" is="emby-checkbox"/><span>جلب المخرجين والكتاب</span></label>
+<h3>الأداء</h3>
+<div class="inputContainer"><label class="inputLabel" for="CacheHours">Cache بالساعات</label><input id="CacheHours" type="number" min="1" max="720" is="emby-input"/></div>
+<div class="inputContainer"><label class="inputLabel" for="RequestDelayMilliseconds">تأخير بين الطلبات (ms)</label><input id="RequestDelayMilliseconds" type="number" min="0" max="10000" is="emby-input"/></div>
+<div class="inputContainer"><label class="inputLabel" for="RequestTimeoutSeconds">Timeout بالثواني</label><input id="RequestTimeoutSeconds" type="number" min="5" max="120" is="emby-input"/></div>
+<div class="inputContainer"><label class="inputLabel" for="RetryCount">عدد إعادة المحاولة</label><input id="RetryCount" type="number" min="0" max="5" is="emby-input"/></div>
+<div class="inputContainer"><label class="inputLabel" for="MaxSearchResults">أقصى نتائج البحث</label><input id="MaxSearchResults" type="number" min="1" max="50" is="emby-input"/></div>
+<div class="inputContainer"><label class="inputLabel" for="MaxCastMembers">أقصى عدد ممثلين</label><input id="MaxCastMembers" type="number" min="1" max="120" is="emby-input"/></div>
+<div class="inputContainer"><label class="inputLabel" for="MaxImages">أقصى عدد صور</label><input id="MaxImages" type="number" min="1" max="30" is="emby-input"/></div>
+<div class="inputContainer"><label class="inputLabel" for="BaseUrl">Base URL</label><input id="BaseUrl" type="text" is="emby-input"/></div>
+<div class="inputContainer"><label class="inputLabel" for="UserAgent">User-Agent</label><input id="UserAgent" type="text" is="emby-input"/></div>
+<button is="emby-button" type="submit" class="raised button-submit block emby-button"><span>حفظ</span></button>
+</form></div></div>
+<script>(function(){const id='2af4cef6-0133-4519-8e31-18ffadeaeb41',page=document.querySelector('#ElCinemaConfigPage'),form=document.querySelector('#ElCinemaConfigForm');const bools=['EnableProvider','EnableMovieMetadata','EnableSeriesMetadata','EnableSeasonMetadata','EnableEpisodeMetadata','EnablePeopleMetadata','EnableImages','EnableGalleryImages','EnableCast','EnableCrew'];const nums=['CacheHours','RequestDelayMilliseconds','RequestTimeoutSeconds','RetryCount','MaxSearchResults','MaxCastMembers','MaxImages'];const strs=['BaseUrl','UserAgent'];page.addEventListener('pageshow',()=>{Dashboard.showLoadingMsg();ApiClient.getPluginConfiguration(id).then(c=>{bools.forEach(k=>document.querySelector('#'+k).checked=!!c[k]);nums.forEach(k=>document.querySelector('#'+k).value=c[k]);strs.forEach(k=>document.querySelector('#'+k).value=c[k]||'');Dashboard.hideLoadingMsg();});});form.addEventListener('submit',e=>{e.preventDefault();Dashboard.showLoadingMsg();ApiClient.getPluginConfiguration(id).then(c=>{bools.forEach(k=>c[k]=document.querySelector('#'+k).checked);nums.forEach(k=>c[k]=parseInt(document.querySelector('#'+k).value||'0',10));strs.forEach(k=>c[k]=document.querySelector('#'+k).value||'');return ApiClient.updatePluginConfiguration(id,c);}).then(Dashboard.processPluginConfigurationUpdateResult);return false;});})();</script></div>
