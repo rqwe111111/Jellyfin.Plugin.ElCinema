@@ -1,4 +1,4 @@
-using Jellyfin.Plugin.ElCinema.Models;using Jellyfin.Plugin.ElCinema.Services;using MediaBrowser.Controller.Entities.TV;using MediaBrowser.Controller.Providers;using MediaBrowser.Model.Providers;
+using Jellyfin.Plugin.ElCinema.Models;using Jellyfin.Plugin.ElCinema.Services;using MediaBrowser.Controller.Entities.TV;using MediaBrowser.Controller.Providers;using MediaBrowser.Model.Providers;using MediaBrowser.Model.Entities;
 namespace Jellyfin.Plugin.ElCinema.Providers;
 public sealed class ElCinemaEpisodeProvider(ElCinemaClient client):IRemoteMetadataProvider<Episode,EpisodeInfo>,IHasOrder
 {
