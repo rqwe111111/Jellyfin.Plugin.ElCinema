@@ -14,6 +14,16 @@ jobs:
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '10.0.x'
+      - name: Reconstruct large source files
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path Services | Out-Null
+          $client = (Get-ChildItem Services/_source/ElCinemaClient.cs.b64.* | Sort-Object Name | ForEach-Object { (Get-Content $_.FullName -Raw).Trim() }) -join ''
+          [IO.File]::WriteAllBytes('Services/ElCinemaClient.cs', [Convert]::FromBase64String($client))
+          $html = (Get-ChildItem Services/_source/HtmlTools.cs.b64.* | Sort-Object Name | ForEach-Object { (Get-Content $_.FullName -Raw).Trim() }) -join ''
+          [IO.File]::WriteAllBytes('Services/HtmlTools.cs', [Convert]::FromBase64String($html))
+          Write-Host "ElCinemaClient.cs: $((Get-Item Services/ElCinemaClient.cs).Length) bytes"
+          Write-Host "HtmlTools.cs: $((Get-Item Services/HtmlTools.cs).Length) bytes"
       - name: Restore
         run: dotnet restore Jellyfin.Plugin.ElCinema.csproj
       - name: Publish
