@@ -1,0 +1,10 @@
+using Jellyfin.Plugin.ElCinema.Services;using MediaBrowser.Controller.Entities;using MediaBrowser.Controller.Providers;using MediaBrowser.Model.Providers;
+namespace Jellyfin.Plugin.ElCinema.Providers;
+public sealed class ElCinemaPersonProvider(ElCinemaClient client):IRemoteMetadataProvider<Person,PersonLookupInfo>,IHasOrder
+{
+ public string Name=>Constants.ProviderName;public int Order=>-5;
+ public async Task<IEnumerable<RemoteSearchResult>> GetSearchResults(PersonLookupInfo i,CancellationToken ct){if(!(Plugin.Instance?.Configuration.EnablePeopleMetadata??true))return [];var id=i.GetProviderId(Constants.ProviderId);if(!string.IsNullOrWhiteSpace(id)){var p=await client.GetPersonAsync(id,ct);return p is null?[]:[Result(p)];}var xs=await client.SearchPeopleAsync(i.Name,ct);return xs.Select(Result);}
+ public async Task<MetadataResult<Person>> GetMetadata(PersonLookupInfo i,CancellationToken ct){var r=new MetadataResult<Person>{Item=new Person(),ResultLanguage=Constants.Language,Provider=Name};if(!(Plugin.Instance?.Configuration.EnablePeopleMetadata??true))return r;var id=i.GetProviderId(Constants.ProviderId);r.QueriedById=!string.IsNullOrWhiteSpace(id);if(string.IsNullOrWhiteSpace(id))id=(await client.SearchPeopleAsync(i.Name,ct)).FirstOrDefault()?.Id;if(string.IsNullOrWhiteSpace(id))return r;var p=await client.GetPersonAsync(id,ct);if(p is null)return r;r.HasMetadata=true;r.Item.Name=p.Name;r.Item.OriginalTitle=p.OriginalName;r.Item.Overview=p.Overview;r.Item.PremiereDate=p.BirthDate;r.Item.ProductionYear=p.BirthYear;if(!string.IsNullOrWhiteSpace(p.Country))r.Item.ProductionLocations=[p.Country];r.Item.SetProviderId(Constants.ProviderId,p.Id);return r;}
+ public Task<HttpResponseMessage> GetImageResponse(string u,CancellationToken ct)=>client.GetImageResponseAsync(u,ct);
+ private RemoteSearchResult Result(Jellyfin.Plugin.ElCinema.Models.ElCinemaPersonDetails p){var r=new RemoteSearchResult{Name=p.Name,Overview=p.Overview,ImageUrl=p.ImageUrl,PremiereDate=p.BirthDate,ProductionYear=p.BirthYear,SearchProviderName=Name};r.SetProviderId(Constants.ProviderId,p.Id);return r;}
+}
