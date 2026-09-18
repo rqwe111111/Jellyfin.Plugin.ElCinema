@@ -1,0 +1,20 @@
+[
+  {
+    "category": "Metadata",
+    "guid": "2af4cef6-0133-4519-8e31-18ffadeaeb41",
+    "name": "elCinema Metadata Full",
+    "description": "Arabic movie, series, season, episode and people metadata provider for Jellyfin 12.1.",
+    "owner": "Rafat",
+    "overview": "Arabic metadata from elCinema for Jellyfin",
+    "versions": [
+      {
+        "checksum": "c857b9679f6415ea69f51537b64370d0",
+        "changelog": "Full beta with movies, series, seasons, episodes, people and images.",
+        "targetAbi": "12.0.0.0",
+        "sourceUrl": "https://raw.githubusercontent.com/rqwe111111/Jellyfin.Plugin.ElCinema/main/repository/Jellyfin.Plugin.ElCinema_0.3.0.zip",
+        "timestamp": "2026-09-18 22:30:02",
+        "version": "0.3.0.0"
+      }
+    ]
+  }
+]
