@@ -1,0 +1,87 @@
+<div id="RepositoryBootstrapConfigPage"
+     data-role="page"
+     class="page type-interior pluginConfigurationPage"
+     data-require="emby-input,emby-button,emby-checkbox">
+  <div data-role="content">
+    <div class="content-primary">
+      <form id="RepositoryBootstrapConfigForm">
+        <h2>Repository Bootstrap</h2>
+        <p>
+          Adds a Jellyfin plugin repository automatically when the server starts.
+          After changing these settings, restart Jellyfin to apply them.
+        </p>
+
+        <div class="inputContainer">
+          <label class="inputLabel" for="RepositoryName">Repository name</label>
+          <input id="RepositoryName" type="text" is="emby-input" />
+        </div>
+
+        <div class="inputContainer">
+          <label class="inputLabel" for="RepositoryUrl">Manifest URL</label>
+          <input id="RepositoryUrl" type="url" is="emby-input" />
+          <div class="fieldDescription">
+            Example: https://example.com/manifest.json
+          </div>
+        </div>
+
+        <label class="emby-checkbox-label">
+          <input id="RepositoryEnabled" type="checkbox" is="emby-checkbox" />
+          <span>Enable repository</span>
+        </label>
+
+        <label class="emby-checkbox-label">
+          <input id="AddOnStartup" type="checkbox" is="emby-checkbox" />
+          <span>Add/update repository automatically on startup</span>
+        </label>
+
+        <label class="emby-checkbox-label">
+          <input id="UpdateExisting" type="checkbox" is="emby-checkbox" />
+          <span>Update an existing repository with the same name or URL</span>
+        </label>
+
+        <button is="emby-button"
+                type="submit"
+                class="raised button-submit block emby-button">
+          <span>Save</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const pluginId = 'a4e57b93-7a8c-4d9b-bf5a-73b3414d9a91';
+      const page = document.querySelector('#RepositoryBootstrapConfigPage');
+      const form = document.querySelector('#RepositoryBootstrapConfigForm');
+
+      page.addEventListener('pageshow', function () {
+        Dashboard.showLoadingMsg();
+        ApiClient.getPluginConfiguration(pluginId).then(function (cfg) {
+          document.querySelector('#RepositoryName').value = cfg.RepositoryName || '';
+          document.querySelector('#RepositoryUrl').value = cfg.RepositoryUrl || '';
+          document.querySelector('#RepositoryEnabled').checked = !!cfg.RepositoryEnabled;
+          document.querySelector('#AddOnStartup').checked = !!cfg.AddOnStartup;
+          document.querySelector('#UpdateExisting').checked = !!cfg.UpdateExisting;
+          Dashboard.hideLoadingMsg();
+        });
+      });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        Dashboard.showLoadingMsg();
+
+        ApiClient.getPluginConfiguration(pluginId).then(function (cfg) {
+          cfg.RepositoryName = document.querySelector('#RepositoryName').value.trim();
+          cfg.RepositoryUrl = document.querySelector('#RepositoryUrl').value.trim();
+          cfg.RepositoryEnabled = document.querySelector('#RepositoryEnabled').checked;
+          cfg.AddOnStartup = document.querySelector('#AddOnStartup').checked;
+          cfg.UpdateExisting = document.querySelector('#UpdateExisting').checked;
+
+          return ApiClient.updatePluginConfiguration(pluginId, cfg);
+        }).then(Dashboard.processPluginConfigurationUpdateResult);
+
+        return false;
+      });
+    })();
+  </script>
+</div>
