@@ -4,6 +4,9 @@ on:
   workflow_dispatch:
   push:
     branches: [ main, master ]
+    paths-ignore:
+      - 'RepositoryBootstrap/**'
+      - '.github/workflows/build-repository-bootstrap.yml'
 
 jobs:
   build:
