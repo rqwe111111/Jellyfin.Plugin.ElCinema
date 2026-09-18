@@ -1,5 +1,8 @@
 name: Build Jellyfin.Plugin.ElCinema
 
+permissions:
+  contents: write
+
 on:
   workflow_dispatch:
   push:
@@ -7,6 +10,8 @@ on:
     paths-ignore:
       - 'RepositoryBootstrap/**'
       - '.github/workflows/build-repository-bootstrap.yml'
+      - 'repository/**'
+      - 'manifest.json'
 
 jobs:
   build:
@@ -54,3 +59,51 @@ jobs:
         with:
           name: Jellyfin.Plugin.ElCinema_0.3.0
           path: dist/Jellyfin.Plugin.ElCinema_0.3.0.zip
+
+      - name: Publish Jellyfin repository manifest
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path repository | Out-Null
+          Copy-Item dist/Jellyfin.Plugin.ElCinema_0.3.0.zip repository/Jellyfin.Plugin.ElCinema_0.3.0.zip -Force
+
+          $zip = 'repository/Jellyfin.Plugin.ElCinema_0.3.0.zip'
+          $checksum = (Get-FileHash $zip -Algorithm MD5).Hash.ToLowerInvariant()
+          $timestamp = (Get-Date).ToUniversalTime().ToString('yyyy-MM-dd HH:mm:ss')
+
+          $manifest = @"
+          [
+            {
+              "category": "Metadata",
+              "guid": "2af4cef6-0133-4519-8e31-18ffadeaeb41",
+              "name": "elCinema Metadata Full",
+              "description": "Arabic movie, series, season, episode and people metadata provider for Jellyfin 12.1.",
+              "owner": "Rafat",
+              "overview": "Arabic metadata from elCinema for Jellyfin",
+              "versions": [
+                {
+                  "checksum": "$checksum",
+                  "changelog": "Full beta with movies, series, seasons, episodes, people and images.",
+                  "targetAbi": "12.0.0.0",
+                  "sourceUrl": "https://raw.githubusercontent.com/rqwe111111/Jellyfin.Plugin.ElCinema/main/repository/Jellyfin.Plugin.ElCinema_0.3.0.zip",
+                  "timestamp": "$timestamp",
+                  "version": "0.3.0.0"
+                }
+              ]
+            }
+          ]
+          "@
+
+          $manifest | Set-Content manifest.json -Encoding utf8
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f repository/Jellyfin.Plugin.ElCinema_0.3.0.zip manifest.json
+
+          git diff --cached --quiet
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "Repository package is already current."
+            exit 0
+          }
+
+          git commit -m "Publish Jellyfin repository package [skip ci]"
+          git push
