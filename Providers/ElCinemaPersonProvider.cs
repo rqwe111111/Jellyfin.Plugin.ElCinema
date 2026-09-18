@@ -1,4 +1,4 @@
-using Jellyfin.Plugin.ElCinema.Services;using MediaBrowser.Controller.Entities;using MediaBrowser.Controller.Providers;using MediaBrowser.Model.Providers;
+using Jellyfin.Plugin.ElCinema.Services;using MediaBrowser.Controller.Entities;using MediaBrowser.Controller.Providers;using MediaBrowser.Model.Providers;using MediaBrowser.Model.Entities;
 namespace Jellyfin.Plugin.ElCinema.Providers;
 public sealed class ElCinemaPersonProvider(ElCinemaClient client):IRemoteMetadataProvider<Person,PersonLookupInfo>,IHasOrder
 {
