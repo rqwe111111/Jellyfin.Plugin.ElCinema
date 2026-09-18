@@ -1,0 +1,10 @@
+using Jellyfin.Plugin.ElCinema.Models;using Jellyfin.Plugin.ElCinema.Services;using MediaBrowser.Controller.Entities.Movies;using MediaBrowser.Controller.Providers;using MediaBrowser.Model.Providers;
+namespace Jellyfin.Plugin.ElCinema.Providers;
+public sealed class ElCinemaMovieProvider(ElCinemaClient client):IRemoteMetadataProvider<Movie,MovieInfo>,IHasOrder
+{
+ public string Name=>Constants.ProviderName;public int Order=>-5;
+ public async Task<IEnumerable<RemoteSearchResult>> GetSearchResults(MovieInfo i,CancellationToken ct){if(!(Plugin.Instance?.Configuration.EnableMovieMetadata??true))return [];var id=i.GetProviderId(Constants.ProviderId);if(!string.IsNullOrWhiteSpace(id)){var w=await client.GetWorkAsync(id,ct);return w is null?[]:[Result(w)];}var xs=await client.SearchWorksAsync(i.Name,i.Year,ElCinemaWorkKind.Movie,ct);return xs.Select(x=>{var r=new RemoteSearchResult{Name=x.Title,ProductionYear=x.Year,ImageUrl=x.ImageUrl,SearchProviderName=Name};r.SetProviderId(Constants.ProviderId,x.Id);return r;});}
+ public async Task<MetadataResult<Movie>> GetMetadata(MovieInfo i,CancellationToken ct){var r=new MetadataResult<Movie>{Item=new Movie(),ResultLanguage=Constants.Language,Provider=Name};if(!(Plugin.Instance?.Configuration.EnableMovieMetadata??true))return r;var id=i.GetProviderId(Constants.ProviderId);r.QueriedById=!string.IsNullOrWhiteSpace(id);if(string.IsNullOrWhiteSpace(id))id=(await client.SearchWorksAsync(i.Name,i.Year,ElCinemaWorkKind.Movie,ct)).FirstOrDefault()?.Id;if(string.IsNullOrWhiteSpace(id))return r;var w=await client.GetWorkAsync(id,ct);if(w is null||(w.Kind!=ElCinemaWorkKind.Unknown&&w.Kind!=ElCinemaWorkKind.Movie))return r;r.HasMetadata=true;ProviderMapper.ApplyWork(r,r.Item,w);return r;}
+ public Task<HttpResponseMessage> GetImageResponse(string u,CancellationToken ct)=>client.GetImageResponseAsync(u,ct);
+ private RemoteSearchResult Result(ElCinemaWork w){var r=new RemoteSearchResult{Name=w.Title,Overview=w.Overview,ProductionYear=w.Year,PremiereDate=w.PremiereDate,ImageUrl=w.PosterUrl,SearchProviderName=Name};r.SetProviderId(Constants.ProviderId,w.Id);return r;}
+}
