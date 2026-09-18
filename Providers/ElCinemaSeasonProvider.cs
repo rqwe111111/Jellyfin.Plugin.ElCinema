@@ -1,0 +1,10 @@
+using Jellyfin.Plugin.ElCinema.Services;using MediaBrowser.Controller.Entities.TV;using MediaBrowser.Controller.Providers;using MediaBrowser.Model.Providers;
+namespace Jellyfin.Plugin.ElCinema.Providers;
+public sealed class ElCinemaSeasonProvider(ElCinemaClient client):IRemoteMetadataProvider<Season,SeasonInfo>,IHasOrder
+{
+ public string Name=>Constants.ProviderName;public int Order=>-5;
+ public async Task<IEnumerable<RemoteSearchResult>> GetSearchResults(SeasonInfo i,CancellationToken ct){if(!(Plugin.Instance?.Configuration.EnableSeasonMetadata??true))return [];var work=ResolveWork(i);var s=i.IndexNumber??1;if(string.IsNullOrWhiteSpace(work))return [];var w=await client.GetWorkAsync(work,ct);if(w is null)return [];var r=new RemoteSearchResult{Name=s==0?"الحلقات الخاصة":$"الموسم {s}",ProductionYear=w.Year,ImageUrl=w.PosterUrl,SearchProviderName=Name};r.SetProviderId(Constants.ProviderId,ProviderIds.Season(work,s));return [r];}
+ public async Task<MetadataResult<Season>> GetMetadata(SeasonInfo i,CancellationToken ct){var r=new MetadataResult<Season>{Item=new Season(),ResultLanguage=Constants.Language,Provider=Name};if(!(Plugin.Instance?.Configuration.EnableSeasonMetadata??true))return r;var work=ResolveWork(i);var s=i.IndexNumber??1;if(string.IsNullOrWhiteSpace(work))return r;var w=await client.GetWorkAsync(work,ct);if(w is null)return r;r.HasMetadata=true;r.Item.Name=s==0?"الحلقات الخاصة":$"الموسم {s}";r.Item.IndexNumber=s;r.Item.ProductionYear=w.Year;r.Item.SetProviderId(Constants.ProviderId,ProviderIds.Season(work,s));return r;}
+ public Task<HttpResponseMessage> GetImageResponse(string u,CancellationToken ct)=>client.GetImageResponseAsync(u,ct);
+ private static string? ResolveWork(SeasonInfo i){var own=i.GetProviderId(Constants.ProviderId);if(ProviderIds.TrySeason(own,out var w,out _))return w;if(!string.IsNullOrWhiteSpace(own)&&own.All(char.IsDigit))return own;if(i.SeriesProviderIds is not null&&i.SeriesProviderIds.TryGetValue(Constants.ProviderId,out var sid)&&sid.All(char.IsDigit))return sid;return null;}
+}
