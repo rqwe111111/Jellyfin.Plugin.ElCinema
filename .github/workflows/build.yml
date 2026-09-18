@@ -25,6 +25,7 @@ jobs:
           $htmlPath = 'Services/HtmlTools.cs'
           $source = Get-Content $htmlPath -Raw
           $source = $source -replace 'private static void AddGenre\(ElCinemaWork w,string\? s\)\{[^\r\n]*\}', 'private static void AddGenre(ElCinemaWork w,string? s){if(string.IsNullOrWhiteSpace(s))return;var v=s.Trim();if(!w.Genres.Any(x=>string.Equals(x,v,StringComparison.OrdinalIgnoreCase)))w.Genres.Add(v);}'
+          $source = $source.Replace('string.Equals(x.Name,p.Name,StringComparer.OrdinalIgnoreCase)', 'string.Equals(x.Name,p.Name,StringComparison.OrdinalIgnoreCase)')
           Set-Content -Path $htmlPath -Value $source -Encoding utf8
           Write-Host "ElCinemaClient.cs: $((Get-Item Services/ElCinemaClient.cs).Length) bytes"
           Write-Host "HtmlTools.cs: $((Get-Item Services/HtmlTools.cs).Length) bytes"
