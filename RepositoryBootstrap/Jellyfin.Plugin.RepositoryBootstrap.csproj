@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>Jellyfin.Plugin.RepositoryBootstrap</AssemblyName>
+    <RootNamespace>Jellyfin.Plugin.RepositoryBootstrap</RootNamespace>
+    <Version>0.1.0</Version>
+    <Authors>Rafat / OpenAI</Authors>
+    <Description>Adds a Jellyfin plugin repository automatically on server startup.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Jellyfin.Controller" Version="12.1.0"><ExcludeAssets>runtime</ExcludeAssets></PackageReference>
+    <PackageReference Include="Jellyfin.Model" Version="12.1.0"><ExcludeAssets>runtime</ExcludeAssets></PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.11"><ExcludeAssets>runtime</ExcludeAssets></PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Configuration\configPage.html" />
+  </ItemGroup>
+</Project>
