@@ -1,0 +1,14 @@
+name: "elCinema Metadata Full"
+guid: "2af4cef6-0133-4519-8e31-18ffadeaeb41"
+version: "0.3.0.0"
+targetAbi: "12.0.0.0"
+framework: "net10.0"
+overview: "Arabic movie, series, season, episode and people metadata from elCinema.com"
+description: >
+  Full metadata provider for Jellyfin 12.1: movies, series, seasons, episodes, people, posters and galleries.
+category: "Metadata"
+owner: "Rafat"
+artifacts:
+- "Jellyfin.Plugin.ElCinema.dll"
+changelog: >
+  Full beta: episode/season/person providers, gallery images, Arabic matching, retries and expanded settings.
